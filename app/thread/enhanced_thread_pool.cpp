@@ -58,7 +58,7 @@ public:
     bool operator<(const TaskWrapper& other) const {
         if (executeTime != other.executeTime) {
             return executeTime > other.executeTime; // 时间早的优先
-        }
+        }  
         return taskPriority < other.taskPriority; // 优先级高的优先
     }
 
@@ -69,6 +69,7 @@ private:
     size_t taskId;
     
     static atomic<size_t> idCounter;
+
     static size_t generateId() {
         return idCounter.fetch_add(1);
     }
@@ -102,7 +103,6 @@ private:
     void workerThread() {
         while (true) {
             unique_lock<mutex> lock(queueMutex);
-            
             // 等待条件：线程池停止或有任务可执行
             condition.wait(lock, [this] {
                 return stop || (!taskQueue.empty() && taskQueue.top().isReady());
@@ -118,7 +118,6 @@ private:
                 TaskWrapper task = move(const_cast<TaskWrapper&>(taskQueue.top()));
                 taskQueue.pop();
                 lock.unlock();
-                
                 // 执行任务
                 activeThreads++;
                 try {
@@ -151,9 +150,7 @@ private:
 public:
     explicit EnhancedThreadPool(size_t threads = thread::hardware_concurrency()) 
         : stop(false), activeThreads(0), finishedTasks(0) {
-        
         startTime = chrono::steady_clock::now();
-        
         // 创建工作线程
         for (size_t i = 0; i < threads; ++i) {
             workers.emplace_back(&EnhancedThreadPool::workerThread, this);
@@ -168,25 +165,23 @@ public:
     template<typename F, typename... Args>
     auto enqueue(F&& f, Args&&... args) 
         -> future<typename result_of<F(Args...)>::type> {
-        
+
         using ReturnType = typename result_of<F(Args...)>::type;
-        
+
         auto task = make_shared<packaged_task<ReturnType()>>(
             bind(forward<F>(f), forward<Args>(args)...)
         );
-        
+
         future<ReturnType> result = task->get_future();
-        
+
         {
             unique_lock<mutex> lock(queueMutex);
-            
             if (stop) {
                 throw runtime_error("线程池已停止，无法添加任务");
             }
-            
             taskQueue.emplace([task]() { (*task)(); });
         }
-        
+
         condition.notify_one();
         return result;
     }
@@ -195,25 +190,18 @@ public:
     template<typename F, typename... Args>
     auto enqueuePriority(F&& f, int priority, Args&&... args) 
         -> future<typename result_of<F(Args...)>::type> {
-        
         using ReturnType = typename result_of<F(Args...)>::type;
-        
         auto task = make_shared<packaged_task<ReturnType()>>(
             bind(forward<F>(f), forward<Args>(args)...)
         );
-        
         future<ReturnType> result = task->get_future();
-        
         {
             unique_lock<mutex> lock(queueMutex);
-            
             if (stop) {
                 throw runtime_error("线程池已停止，无法添加任务");
             }
-            
             taskQueue.emplace([task]() { (*task)(); }, priority);
         }
-        
         condition.notify_one();
         return result;
     }
@@ -222,25 +210,18 @@ public:
     template<typename F, typename... Args>
     auto enqueueDelayed(F&& f, chrono::milliseconds delay, Args&&... args) 
         -> future<typename result_of<F(Args...)>::type> {
-        
         using ReturnType = typename result_of<F(Args...)>::type;
-        
         auto task = make_shared<packaged_task<ReturnType()>>(
             bind(forward<F>(f), forward<Args>(args)...)
         );
-        
         future<ReturnType> result = task->get_future();
-        
         {
             unique_lock<mutex> lock(queueMutex);
-            
             if (stop) {
                 throw runtime_error("线程池已停止，无法添加任务");
             }
-            
             taskQueue.emplace([task]() { (*task)(); }, delay);
         }
-        
         condition.notify_one();
         return result;
     }
@@ -249,11 +230,9 @@ public:
     template<typename Iterator>
     vector<future<void>> enqueueBatch(Iterator first, Iterator last) {
         vector<future<void>> results;
-        
         for (auto it = first; it != last; ++it) {
             results.push_back(enqueue(*it));
         }
-        
         return results;
     }
     
@@ -276,15 +255,12 @@ public:
             unique_lock<mutex> lock(queueMutex);
             stop = true;
         }
-        
         condition.notify_all();
-        
         for (auto& worker : workers) {
             if (worker.joinable()) {
                 worker.join();
             }
         }
-        
         workers.clear();
     }
     
@@ -300,16 +276,14 @@ public:
     ThreadPoolStats getStats() const {
         unique_lock<mutex> lock(queueMutex);
         unique_lock<mutex> statsLock(statsMutex);
-        
         auto now = chrono::steady_clock::now();
         auto runTime = chrono::duration_cast<chrono::seconds>(now - startTime);
-        
         return {
             workers.size(),
             activeThreads.load(),
             finishedTasks.load(),
             taskQueue.size(),
-            runTime.count()
+            static_cast<double>(runTime.count())  // 添加显式转换
         };
     }
     
@@ -329,24 +303,22 @@ public:
 thread_local random_device rd;
 thread_local mt19937 gen(rd());
 thread_local uniform_int_distribution<> dis(1, 100);
+mutex coutMutex;  // 全局输出锁
 
 // 演示函数
 void basicTaskExample() {
     cout << "\n=== 基本任务示例 ===" << endl;
-    
     EnhancedThreadPool pool(4);
-    
     // 添加一些基本任务
     vector<future<int>> results;
-    
     for (int i = 0; i < 10; ++i) {
         results.push_back(pool.enqueue([i] {
-            this_thread::sleep_for(chrono::milliseconds(dis(gen) * 10));
+            this_thread::sleep_for(chrono::milliseconds(dis(gen) * 20));
+            lock_guard<mutex> lock(coutMutex);  // 保护输出
             cout << "任务 " << i << " 执行完成" << endl;
             return i * i;
         }));
     }
-    
     // 获取结果
     cout << "任务结果: ";
     for (auto& result : results) {
@@ -357,9 +329,7 @@ void basicTaskExample() {
 
 void priorityTaskExample() {
     cout << "\n=== 优先级任务示例 ===" << endl;
-    
     EnhancedThreadPool pool(2);
-    
     // 添加不同优先级的任务
     for (int i = 0; i < 10; ++i) {
         int priority = i % 3 + 1; // 优先级 1-3
@@ -368,30 +338,24 @@ void priorityTaskExample() {
             cout << "优先级 " << priority << " 任务 " << i << " 执行完成" << endl;
         }, priority);
     }
-    
     this_thread::sleep_for(chrono::seconds(2));
 }
 
 void delayedTaskExample() {
     cout << "\n=== 延迟任务示例 ===" << endl;
-    
     EnhancedThreadPool pool(2);
-    
     auto start = chrono::steady_clock::now();
-    
     // 添加延迟任务
     pool.enqueueDelayed([start] {
         auto now = chrono::steady_clock::now();
         auto elapsed = chrono::duration_cast<chrono::milliseconds>(now - start);
         cout << "延迟100ms任务执行，实际经过时间: " << elapsed.count() << "ms" << endl;
     }, chrono::milliseconds(100));
-    
     pool.enqueueDelayed([start] {
         auto now = chrono::steady_clock::now();
         auto elapsed = chrono::duration_cast<chrono::milliseconds>(now - start);
         cout << "延迟200ms任务执行，实际经过时间: " << elapsed.count() << "ms" << endl;
     }, chrono::milliseconds(200));
-    
     pool.enqueueDelayed([start] {
         auto now = chrono::steady_clock::now();
         auto elapsed = chrono::duration_cast<chrono::milliseconds>(now - start);
@@ -403,9 +367,7 @@ void delayedTaskExample() {
 
 void batchTaskExample() {
     cout << "\n=== 批量任务示例 ===" << endl;
-    
     EnhancedThreadPool pool(4);
-    
     // 准备一批任务
     vector<function<void()>> tasks;
     for (int i = 0; i < 20; ++i) {
@@ -417,7 +379,6 @@ void batchTaskExample() {
     
     // 批量添加任务
     auto results = pool.enqueueBatch(tasks.begin(), tasks.end());
-    
     // 等待所有任务完成
     for (auto& result : results) {
         result.get();
@@ -426,25 +387,19 @@ void batchTaskExample() {
 
 void statsExample() {
     cout << "\n=== 统计信息示例 ===" << endl;
-    
     EnhancedThreadPool pool(4);
-    
     // 添加一些任务
     for (int i = 0; i < 15; ++i) {
         pool.enqueue([i] {
             this_thread::sleep_for(chrono::milliseconds(dis(gen)));
         });
     }
-    
     // 等待一段时间
     this_thread::sleep_for(chrono::milliseconds(500));
-    
     // 打印统计信息
     pool.printStats();
-    
     // 等待所有任务完成
     pool.waitForAllTasks();
-    
     // 打印最终统计信息
     cout << "\n最终统计信息:" << endl;
     pool.printStats();
@@ -452,19 +407,16 @@ void statsExample() {
 
 int main() {
     cout << "C++11 增强线程池演示" << endl;
-    
     try {
         basicTaskExample();
-        priorityTaskExample();
-        delayedTaskExample();
-        batchTaskExample();
-        statsExample();
-        
+        // priorityTaskExample();
+        // delayedTaskExample();
+        // batchTaskExample();
+        // statsExample();
         cout << "\n程序结束" << endl;
     } catch (const exception& e) {
         cerr << "异常: " << e.what() << endl;
         return 1;
     }
-    
     return 0;
 }

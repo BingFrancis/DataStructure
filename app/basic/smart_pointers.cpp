@@ -30,7 +30,7 @@ void unique_ptr_example() {
     cout << "\n=== unique_ptr 示例 ===" << endl;
     
     // 创建unique_ptr
-    unique_ptr<Resource> ptr1 = make_unique<Resource>("Unique1");
+    unique_ptr<Resource> ptr1(new Resource("Unique1"));
     ptr1->doSomething();
     
     // unique_ptr不能复制，但可以移动

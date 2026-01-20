@@ -11,6 +11,7 @@
 #include <chrono>
 #include <unordered_map>
 #include <set>
+#include <algorithm>
 
 using namespace std;
 
@@ -313,7 +314,7 @@ private:
     
 public:
     ThreadSafeObjectPool(size_t initialSize = 0, 
-                       function<unique_ptr<T>()> fact = []() { return make_unique<T>(); },
+                       function<unique_ptr<T>()> fact = []() { return unique_ptr<T>(new T()); },
                        function<void(T&)> reset = [](T&) {})
         : factory(move(fact)), resetFunction(move(reset)) {
         
@@ -527,7 +528,7 @@ void objectPoolDemo() {
     
     // 创建对象池，预分配3个对象
     ThreadSafeObjectPool<vector<int>> pool(3, 
-        []() { return make_unique<vector<int>>(); },
+        []() { return unique_ptr<vector<int>>(new vector<int>()); },
         [](vector<int>& vec) { 
             vec.clear();
             cout << "重置向量对象" << endl;

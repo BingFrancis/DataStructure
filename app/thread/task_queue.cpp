@@ -99,6 +99,7 @@ public:
     
     void stop() {
         running = false;
+        queue.stop();  // 添加这行，通知队列停止
     }
     
     void join() {
