@@ -82,6 +82,85 @@ g++ -std=c++17 memory_layout.cpp -o memory_layout && ./memory_layout
 - 实时渲染系统
 - 数据库系统
 
+**⚠️ 重要注意事项 - 指针转换问题**
+
+在内存池实现中，最常见且危险的错误是指针转换问题：
+
+**问题代码示例：**
+```cpp
+struct Block {
+    Block* next;
+    alignas(T) char data[sizeof(T)];
+};
+
+// 分配时
+T* allocate() {
+    Block* block = /* ... */;
+    return reinterpret_cast<T*>(block->data);  // 返回 data 的地址
+}
+
+// 释放时（错误！）
+void deallocate(T* ptr) {
+    Block* block = reinterpret_cast<Block*>(ptr);  // ❌ 错误！
+    // 问题：ptr 指向 data，而不是 Block 的起始地址
+}
+```
+
+**错误原因：**
+- `ptr` 指向的是 `block->data` 的位置
+- `Block` 结构体包含 `next` 指针（8 字节）和 `data` 数组
+- 两者偏移了 8 字节，直接强制转换会导致地址错误
+- 释放时访问错误的内存地址，导致 `free(): invalid pointer` 错误
+
+**正确解决方案：**
+
+使用映射表保存指针关系：
+
+```cpp
+std::unordered_map<T*, Block*> ptr_to_block;  // 保存映射
+
+T* allocate() {
+    Block* block = /* ... */;
+    T* ptr = reinterpret_cast<T*>(block->data);
+    ptr_to_block[ptr] = block;  // 保存映射
+    return ptr;
+}
+
+void deallocate(T* ptr) {
+    auto it = ptr_to_block.find(ptr);
+    if (it != ptr_to_block.end()) {
+        Block* block = it->second;  // 通过映射找到正确的 Block
+        free_blocks.push_back(block);
+        ptr_to_block.erase(it);
+    }
+}
+```
+
+**其他技巧：**
+- 也可以在 `data` 数组前额外存储 Block 指针
+- 或使用偏移量计算（但更复杂）
+- 使用智能指针管理 Block 的生命周期，避免手动 `delete[]`
+
+**总结：**
+在进行指针转换时，必须清楚指针指向的内存布局，避免盲目强制转换导致地址错误。使用映射表是一种安全可靠的方法。
+
+---
+
+**⚠️ 性能测试注意事项**
+
+内存池的性能优势不在单次分配速度，而在于：
+1. **减少内存碎片**：频繁 new/delete 会产生大量碎片
+2. **缓存友好性**：连续内存布局提高缓存命中率
+3. **减少系统调用**：一次 `new Block[]` 胜过多次 `new Particle`
+4. **避免内存耗尽**：预分配保证内存可用性
+
+在简单的性能测试中（如 1000 次分配），内存池可能因映射表查找开销而表现不佳。但在真实场景中（游戏引擎每帧创建/销毁数万个对象），其优势才真正体现。
+
+如果性能测试显示内存池较慢，这是正常的。可以通过以下方式优化：
+- 减少映射表查找（使用地址对齐计算）
+- 使用更高效的数据结构
+- 根据场景调整块大小和预分配策略
+
 **编译运行：**
 ```bash
 g++ -std=c++17 memory_pool.cpp -o memory_pool && ./memory_pool

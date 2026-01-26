@@ -12,7 +12,10 @@ DataStructure/
 │   ├── README.md
 │   ├── linked_list.cpp
 │   ├── binary_tree.cpp
-│   └── hash_table.cpp
+│   ├── hash_table.cpp
+│   ├── stack.cpp                 # 栈实现
+│   ├── queue.cpp                 # 队列实现
+│   └── heap.cpp                  # 堆（优先队列）
 ├── 02_smart_pointers/            # 智能指针
 │   ├── README.md
 │   ├── smart_pointers.cpp
@@ -45,6 +48,38 @@ DataStructure/
 │   ├── smartThreadPool.cpp
 │   ├── enhanced_thread_pool.cpp
 │   └── smart_ptr_threading.cpp
+├── 07_algorithms/                # 算法
+│   ├── README.md
+│   ├── sorting/
+│   │   ├── bubble_sort.cpp       # 冒泡排序
+│   │   ├── merge_sort.cpp        # 归并排序
+│   │   └── quick_sort.cpp        # 快速排序
+│   ├── searching/
+│   │   └── binary_search.cpp     # 二分查找
+│   └── dynamic_programming/
+│       └── fibonacci.cpp         # 斐波那契数列（DP）
+├── 08_advanced_cpp/               # 高级 C++ 特性
+│   ├── README.md
+│   ├── move_semantics.cpp        # 移动语义
+│   ├── perfect_forwarding.cpp    # 完美转发
+│   └── variadic_templates.cpp   # 可变参数模板
+├── 09_design_patterns/            # 设计模式
+│   ├── README.md
+│   ├── creational/
+│   │   └── singleton.cpp         # 单例模式
+│   └── behavioral/
+│       ├── observer.cpp          # 观察者模式
+│       └── strategy.cpp          # 策略模式
+├── 10_practical_projects/        # 实战项目
+│   ├── README.md
+│   ├── 03_thread_pool/
+│   │   └── thread_pool.cpp       # 线程池实现
+│   └── 04_logger/
+│       └── logger.cpp            # 日志系统
+├── 11_performance/                # 性能优化
+│   └── README.md
+├── 12_testing/                   # 测试
+│   └── README.md
 ├── app/                          # 原始代码目录（保留）
 └── README.md                     # 本文件
 ```
@@ -53,7 +88,7 @@ DataStructure/
 
 ## 🎯 学习路径
 
-本项目的 6 个模块按照由浅入深的学习路径组织，建议按顺序学习：
+本项目的 12 个模块按照由浅入深的学习路径组织，建议按顺序学习：
 
 ### 1️⃣ 01_fundamentals - 基础数据结构
 **学习时间**：5-8 小时
@@ -167,6 +202,120 @@ DataStructure/
 
 ---
 
+### 7️⃣ 07_algorithms - 算法
+**学习时间**：10-15 小时
+
+**核心内容**：
+- 排序算法（冒泡、归并、快速）
+- 搜索算法（二分查找、插值查找）
+- 动态规划（斐波那契、背包问题、LCS）
+- 算法复杂度分析
+
+**学习目标**：
+- 掌握常用算法的实现原理
+- 理解时间复杂度和空间复杂度
+- 能够根据场景选择合适算法
+
+👉 [查看详细文档](./07_algorithms/README.md)
+
+---
+
+### 8️⃣ 08_advanced_cpp - 高级 C++ 特性
+**学习时间**：8-12 小时
+
+**核心内容**：
+- 移动语义和右值引用
+- 完美转发（`std::forward`）
+- 可变参数模板
+- C++20 新特性（协程、概念、范围、模块）
+
+**学习目标**：
+- 理解移动语义的原理和应用
+- 掌握模板元编程技术
+- 熟悉现代 C++ 新特性
+
+👉 [查看详细文档](./08_advanced_cpp/README.md)
+
+---
+
+### 9️⃣ 09_design_patterns - 设计模式
+**学习时间**：12-18 小时
+
+**核心内容**：
+- 创建型模式（单例、工厂、建造者）
+- 结构型模式（适配器、装饰器、代理）
+- 行为型模式（观察者、策略、命令、状态）
+- SOLID 原则
+
+**学习目标**：
+- 理解常用设计模式
+- 学会在项目中正确使用设计模式
+- 掌握面向对象设计原则
+
+👉 [查看详细文档](./09_design_patterns/README.md)
+
+---
+
+### 🔟 10_practical_projects - 实战项目
+**学习时间**：20-30 小时
+
+**核心内容**：
+- 线程池实现
+- 异步日志系统
+- 键值数据库
+- 缓存系统（LRU/LFU）
+- HTTP 服务器
+- JSON 解析器
+
+**学习目标**：
+- 综合运用所学知识
+- 掌握系统编程基础
+- 培养工程思维和架构能力
+
+👉 [查看详细文档](./10_practical_projects/README.md)
+
+---
+
+### 1️⃣1️⃣ 11_performance - 性能优化
+**学习时间**：8-12 小时
+
+**核心内容**：
+- 性能分析工具（perf, Valgrind, gprof）
+- 内存优化（缓存友好、SoA/AoS）
+- CPU 优化（分支预测、SIMD、循环展开）
+- 编译器优化（编译标志、LTO、PGO）
+- 性能测试和基准测试
+
+**学习目标**：
+- 掌握性能分析工具
+- 理解性能优化原理
+- 能够优化代码性能
+
+👉 [查看详细文档](./11_performance/README.md)
+
+---
+
+### 1️⃣2️⃣ 12_testing - 测试
+**学习时间**：6-10 小时
+
+**核心内容**：
+- 单元测试（Google Test, Catch2）
+- 集成测试和系统测试
+- Mock 和桩（Google Mock）
+- 代码覆盖率（gcov, clang-cov）
+- 基准测试（Google Benchmark）
+- 模糊测试（Fuzzing）
+- CI/CD 集成
+
+**学习目标**：
+- 掌握测试框架的使用
+- 理解测试金字塔
+- 学会编写高质量的测试
+
+👉 [查看详细文档](./12_testing/README.md)
+
+---
+
 ## 🔧 编译说明
 
 ### 基础编译（非多线程）
@@ -249,10 +398,12 @@ g++ -std=c++17 -O2 -Wall filename.cpp -o output && ./output
 5. 设计新场景应用所学技术
 
 ### 进阶方向
-- **游戏开发**：对象池、Arena 分配器、线程池（模块 3、6）
-- **服务器开发**：内存池、线程安全队列、高并发处理（模块 3、6）
-- **系统编程**：内存布局、自定义分配器、底层优化（模块 3）
-- **库开发**：模板编程、完美转发、泛型设计（模块 4）
+- **游戏开发**：对象池、Arena 分配器、线程池（模块 3、6、9）
+- **服务器开发**：内存池、线程安全队列、高并发处理（模块 3、6、10）
+- **系统编程**：内存布局、自定义分配器、底层优化（模块 3、8、11）
+- **库开发**：模板编程、完美转发、泛型设计（模块 4、8、12）
+- **算法工程师**：数据结构、算法、性能优化（模块 1、7、11）
+- **全栈开发**：实战项目、设计模式、测试（模块 9、10、12）
 
 ---
 
@@ -333,12 +484,18 @@ g++ -std=c++17 -O2 -Wall filename.cpp -o output && ./output
 
 ## 🙏 总结
 
-完成这 6 个模块的学习后，你将掌握：
+完成这 12 个模块的学习后，你将掌握：
 - ✅ 基础数据结构的实现和应用
 - ✅ 现代智能指针的使用
 - ✅ 高级内存管理技术
 - ✅ 模板编程和元编程
 - ✅ 字符串处理技巧
 - ✅ 多线程并发编程
+- ✅ 常用算法的原理和实现
+- ✅ 现代 C++ 高级特性
+- ✅ 常用设计模式
+- ✅ 实战项目开发能力
+- ✅ 性能优化技术
+- ✅ 测试驱动开发
 
-这些技能将让你成为更出色的 C++ 开发者。祝你学习愉快！
+这些技能将让你成为更出色的 C++ 工程师。祝你学习愉快！
