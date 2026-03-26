@@ -1,490 +1,300 @@
-# C++ 数据结构与进阶编程
+# C++ 数据结构与算法学习项目
 
-本目录包含多个 C++ 进阶编程练习，涵盖现代 C++ 的重要特性、数据结构实现、内存管理、多线程编程等核心技术。
+> 从基础到实战的完整 C++ 学习路径
 
----
+## 📚 项目简介
 
-## 📁 项目结构（按学习路径组织）
-
-```
-DataStructure/
-├── 01_fundamentals/              # 基础数据结构与 C++ 基础
-│   ├── README.md
-│   ├── linked_list.cpp
-│   ├── binary_tree.cpp
-│   ├── hash_table.cpp
-│   ├── stack.cpp                 # 栈实现
-│   ├── queue.cpp                 # 队列实现
-│   └── heap.cpp                  # 堆（优先队列）
-├── 02_smart_pointers/            # 智能指针
-│   ├── README.md
-│   ├── smart_pointers.cpp
-│   └── modern_cpp_project.cpp
-├── 03_memory_management/         # 内存管理
-│   ├── README.md
-│   ├── memory_layout.cpp
-│   ├── memory_pool.cpp
-│   ├── smart_allocator.cpp
-│   ├── object_pool_demo.cpp
-│   └── object.h
-├── 04_template_metaprogramming/   # 模板与元编程
-│   ├── README.md
-│   ├── template_fundamentals.cpp
-│   ├── function_templates_advanced.cpp
-│   └── template_instantiation.cpp
-├── 05_string_processing/         # 字符串处理
-│   ├── README.md
-│   └── string.cpp
-├── 06_multithreading/            # 多线程并发
-│   ├── README.md
-│   ├── threading_demo.cpp
-│   ├── thread_guard.cpp
-│   ├── thread_test.cpp
-│   ├── multithreading.cpp
-│   ├── safe_queue.cpp
-│   ├── My_Safe_Queue.cpp
-│   ├── task_queue.cpp
-│   ├── future.cpp
-│   ├── smartThreadPool.cpp
-│   ├── enhanced_thread_pool.cpp
-│   └── smart_ptr_threading.cpp
-├── 07_algorithms/                # 算法
-│   ├── README.md
-│   ├── sorting/
-│   │   ├── bubble_sort.cpp       # 冒泡排序
-│   │   ├── merge_sort.cpp        # 归并排序
-│   │   └── quick_sort.cpp        # 快速排序
-│   ├── searching/
-│   │   └── binary_search.cpp     # 二分查找
-│   └── dynamic_programming/
-│       └── fibonacci.cpp         # 斐波那契数列（DP）
-├── 08_advanced_cpp/               # 高级 C++ 特性
-│   ├── README.md
-│   ├── move_semantics.cpp        # 移动语义
-│   ├── perfect_forwarding.cpp    # 完美转发
-│   └── variadic_templates.cpp   # 可变参数模板
-├── 09_design_patterns/            # 设计模式
-│   ├── README.md
-│   ├── creational/
-│   │   └── singleton.cpp         # 单例模式
-│   └── behavioral/
-│       ├── observer.cpp          # 观察者模式
-│       └── strategy.cpp          # 策略模式
-├── 10_practical_projects/        # 实战项目
-│   ├── README.md
-│   ├── 03_thread_pool/
-│   │   └── thread_pool.cpp       # 线程池实现
-│   └── 04_logger/
-│       └── logger.cpp            # 日志系统
-├── 11_performance/                # 性能优化
-│   └── README.md
-├── 12_testing/                   # 测试
-│   └── README.md
-├── app/                          # 原始代码目录（保留）
-└── README.md                     # 本文件
-```
-
----
+本项目系统性地涵盖了 C++ 开发所需的核心知识，从基础数据结构到高级特性，从算法到底层原理，从多线程到设计模式，帮助你全面提升 C++ 编程能力。
 
 ## 🎯 学习路径
 
-本项目的 12 个模块按照由浅入深的学习路径组织，建议按顺序学习：
+建议按照模块顺序学习，每个模块的知识点循序渐进：
+
+```
+01_fundamentals (基础)
+    ↓
+02_smart_pointers (智能指针)
+    ↓
+03_memory_management (内存管理)
+    ↓
+04_template_metaprogramming (模板编程)
+    ↓
+05_string_processing (字符串处理)
+    ↓
+06_multithreading (多线程)
+    ↓
+07_algorithms (算法)
+    ↓
+08_advanced_cpp (高级 C++)
+    ↓
+09_design_patterns (设计模式)
+```
+
+## 📁 模块说明
 
 ### 1️⃣ 01_fundamentals - 基础数据结构
-**学习时间**：5-8 小时
 
-**核心内容**：
-- 链表（单向、双向）
-- 二叉树（遍历、操作）
-- 哈希表（冲突处理、扩容）
+**核心内容：**
+- 链表（linked_list.cpp）
+- 二叉树（binary_tree.cpp）
+- 哈希表（hash_table.cpp）
+- 栈（stack.cpp）
+- 队列（queue.cpp）
+- 堆（heap.cpp）
+- **继承机制**（inheritance.cpp）⭐
 
-**学习目标**：
-- 掌握基本数据结构的实现
-- 理解指针和动态内存
-- 熟练使用 STL 容器
+**学习目标：**
+- 掌握基本数据结构的实现原理
+- 理解面向对象编程核心概念（继承、多态、虚函数）
+- 学会使用 STL 容器
 
-👉 [查看详细文档](./01_fundamentals/README.md)
+**推荐学习时间：** 8-12 小时
 
 ---
 
 ### 2️⃣ 02_smart_pointers - 智能指针
-**学习时间**：3-5 小时
 
-**核心内容**：
-- `std::unique_ptr`（独占所有权）
-- `std::shared_ptr`（共享所有权）
-- `std::weak_ptr`（解决循环引用）
-- 现代 C++ 特性（auto、Lambda、nullptr 等）
+**核心内容：**
+- unique_ptr 独占所有权
+- shared_ptr 共享所有权
+- weak_ptr 解决循环引用
+- 自定义删除器
 
-**学习目标**：
+**学习目标：**
 - 理解 RAII 原则
-- 掌握智能指针的使用
-- 避免内存泄漏和悬空指针
+- 避免内存泄漏
+- 正确管理资源生命周期
 
-👉 [查看详细文档](./02_smart_pointers/README.md)
+**推荐学习时间：** 3-5 小时
 
 ---
 
 ### 3️⃣ 03_memory_management - 内存管理
-**学习时间**：9-13 小时
 
-**核心内容**：
-- C++ 内存布局（栈、堆、代码段、数据段）
-- 内存池实现
-- 5 种高级分配器（Arena、Stack、FreeList、Proxy、STL 包装）
-- 对象池设计
+**核心内容：**
+- 内存布局（memory_layout.cpp）
+- 对象池（object_pool_demo.cpp）
+- 内存池（memory_pool.cpp）
+- 智能分配器（smart_allocator.cpp）
 
-**学习目标**：
-- 理解内存管理机制
-- 掌握高性能内存分配技术
-- 了解内存优化策略
+**学习目标：**
+- 理解 C++ 内存模型
+- 掌握高性能内存管理技术
+- 优化内存分配效率
 
-👉 [查看详细文档](./03_memory_management/README.md)
+**推荐学习时间：** 4-6 小时
 
 ---
 
-### 4️⃣ 04_template_metaprogramming - 模板与元编程
-**学习时间**：6-9 小时
+### 4️⃣ 04_template_metaprogramming - 模板编程
 
-**核心内容**：
-- 函数模板和类模板
-- 完美转发和可变参数模板
-- SFINAE 原则
-- 类型萃取和编译期计算
-- C++20 Concepts
+**核心内容：**
+- 函数模板（template_fundamentals.cpp）
+- 高级模板特性（function_templates_advanced.cpp）
+- 模板实例化（template_instantiation.cpp）
 
-**学习目标**：
-- 掌握模板编程
-- 理解泛型编程思想
-- 能够编写通用的、类型安全的代码
+**学习目标：**
+- 掌握泛型编程思想
+- 理解模板元编程基础
+- 编写类型安全的通用代码
 
-👉 [查看详细文档](./04_template_metaprogramming/README.md)
+**推荐学习时间：** 4-6 小时
 
 ---
 
 ### 5️⃣ 05_string_processing - 字符串处理
-**学习时间**：2-3 小时
 
-**核心内容**：
-- C 风格字符串 vs std::string
-- 字符串与数值类型转换
-- 字符串查找、替换、分割
-- 正则表达式
-- std::string_view（零拷贝）
+**核心内容：**
+- std::string 基础操作
+- 字符串分割、拼接、查找
+- 正则表达式应用
 
-**学习目标**：
+**学习目标：**
 - 熟练使用 std::string
-- 掌握字符串高级操作
-- 了解性能优化技巧
+- 掌握常见字符串处理技巧
 
-👉 [查看详细文档](./05_string_processing/README.md)
+**推荐学习时间：** 2-3 小时
 
 ---
 
-### 6️⃣ 06_multithreading - 多线程并发
-**学习时间**：18-27 小时
+### 6️⃣ 06_multithreading - 多线程
 
-**核心内容**：
-- std::thread 基础
-- 同步机制（互斥锁、条件变量、原子操作）
-- 线程安全队列
-- std::future 和 std::promise（异步编程）
-- 线程池（基础版和增强版）
-- 智能指针与多线程
+**核心内容：**
+- 线程基础（threading_demo.cpp）
+- 线程同步（thread_guard.cpp）
+- 线程池（thread_pool.cpp）
+- 线程安全队列（safe_queue.cpp）
+- Future/Promise（future.cpp）
 
-**学习目标**：
-- 理解多线程编程模型
-- 掌握线程同步技术
-- 能够设计并发程序
-- 避免死锁和竞争条件
+**学习目标：**
+- 理解并发编程模型
+- 掌握线程同步机制
+- 避免数据竞争和死锁
 
-👉 [查看详细文档](./06_multithreading/README.md)
+**推荐学习时间：** 8-12 小时
 
 ---
 
 ### 7️⃣ 07_algorithms - 算法
-**学习时间**：10-15 小时
 
-**核心内容**：
-- 排序算法（冒泡、归并、快速）
-- 搜索算法（二分查找、插值查找）
-- 动态规划（斐波那契、背包问题、LCS）
-- 算法复杂度分析
+**核心内容：**
+- 排序算法（sorting/）
+  - 冒泡排序（bubble_sort.cpp）
+  - 快速排序（quick_sort.cpp）
+  - 归并排序（merge_sort.cpp）
+- 查找算法（searching/）
+  - 二分查找（binary_search.cpp）
+- 动态规划（dynamic_programming/）
+  - 斐波那契数列（fibonacci.cpp）
 
-**学习目标**：
-- 掌握常用算法的实现原理
-- 理解时间复杂度和空间复杂度
-- 能够根据场景选择合适算法
+**学习目标：**
+- 掌握常用排序和查找算法
+- 理解算法复杂度
+- 学会动态规划思想
 
-👉 [查看详细文档](./07_algorithms/README.md)
+**推荐学习时间：** 6-8 小时
 
 ---
 
-### 8️⃣ 08_advanced_cpp - 高级 C++ 特性
-**学习时间**：8-12 小时
+### 8️⃣ 08_advanced_cpp - 高级 C++
 
-**核心内容**：
-- 移动语义和右值引用
-- 完美转发（`std::forward`）
-- 可变参数模板
-- C++20 新特性（协程、概念、范围、模块）
+**核心内容：**
+- 移动语义（move_semantics.cpp）
+- 完美转发（perfect_forwarding.cpp）
+- 可变参数模板（variadic_templates.cpp）
 
-**学习目标**：
-- 理解移动语义的原理和应用
-- 掌握模板元编程技术
-- 熟悉现代 C++ 新特性
+**学习目标：**
+- 理解左值和右值
+- 掌握现代 C++ 性能优化技巧
+- 编写高效的代码
 
-👉 [查看详细文档](./08_advanced_cpp/README.md)
+**推荐学习时间：** 4-6 小时
 
 ---
 
 ### 9️⃣ 09_design_patterns - 设计模式
-**学习时间**：12-18 小时
 
-**核心内容**：
-- 创建型模式（单例、工厂、建造者）
-- 结构型模式（适配器、装饰器、代理）
-- 行为型模式（观察者、策略、命令、状态）
-- SOLID 原则
+**核心内容：**
 
-**学习目标**：
-- 理解常用设计模式
-- 学会在项目中正确使用设计模式
-- 掌握面向对象设计原则
+**创建型模式：**
+- 单例模式（singleton.cpp）
+- 工厂方法模式（factory_method.cpp）
+- 抽象工厂模式（abstract_factory.cpp）
+- 建造者模式（builder.cpp）
 
-👉 [查看详细文档](./09_design_patterns/README.md)
+**结构型模式：**
+- 适配器模式（adapter.cpp）
+- 装饰器模式（decorator.cpp）
+- 代理模式（proxy.cpp）
+- 外观模式（facade.cpp）
 
----
+**行为型模式：**
+- 观察者模式（observer.cpp）
+- 策略模式（strategy.cpp）
+- 命令模式（command.cpp）
+- 状态模式（state.cpp）
 
-### 🔟 10_practical_projects - 实战项目
-**学习时间**：20-30 小时
+**学习目标：**
+- 理解设计模式的原理和应用场景
+- 掌握 23 种设计模式的核心思想
+- 提高代码的可维护性和扩展性
 
-**核心内容**：
-- 线程池实现
-- 异步日志系统
-- 键值数据库
-- 缓存系统（LRU/LFU）
-- HTTP 服务器
-- JSON 解析器
-
-**学习目标**：
-- 综合运用所学知识
-- 掌握系统编程基础
-- 培养工程思维和架构能力
-
-👉 [查看详细文档](./10_practical_projects/README.md)
+**推荐学习时间：** 12-16 小时
 
 ---
 
-### 1️⃣1️⃣ 11_performance - 性能优化
-**学习时间**：8-12 小时
+## 🛠️ 编译运行
 
-**核心内容**：
-- 性能分析工具（perf, Valgrind, gprof）
-- 内存优化（缓存友好、SoA/AoS）
-- CPU 优化（分支预测、SIMD、循环展开）
-- 编译器优化（编译标志、LTO、PGO）
-- 性能测试和基准测试
+### 编译单个文件
 
-**学习目标**：
-- 掌握性能分析工具
-- 理解性能优化原理
-- 能够优化代码性能
-
-👉 [查看详细文档](./11_performance/README.md)
-
----
-
-### 1️⃣2️⃣ 12_testing - 测试
-**学习时间**：6-10 小时
-
-**核心内容**：
-- 单元测试（Google Test, Catch2）
-- 集成测试和系统测试
-- Mock 和桩（Google Mock）
-- 代码覆盖率（gcov, clang-cov）
-- 基准测试（Google Benchmark）
-- 模糊测试（Fuzzing）
-- CI/CD 集成
-
-**学习目标**：
-- 掌握测试框架的使用
-- 理解测试金字塔
-- 学会编写高质量的测试
-
-👉 [查看详细文档](./12_testing/README.md)
-
----
-
-## 🔧 编译说明
-
-### 基础编译（非多线程）
 ```bash
-g++ -std=c++17 filename.cpp -o output && ./output
+g++ -std=c++17 filename.cpp -o output.exe
+./output.exe
 ```
 
-### 多线程项目编译
+### 编译整个模块
+
 ```bash
-g++ -std=c++17 -pthread filename.cpp -o output && ./output
+# 以基础模块为例
+cd 01_fundamentals
+g++ -std=c++17 linked_list.cpp -o linked_list && ./linked_list
 ```
 
-### 优化编译
-```bash
-g++ -std=c++17 -O2 -Wall filename.cpp -o output && ./output
-```
+### 推荐编译器
 
-### 编译参数说明
+- **GCC**: `g++` (推荐)
+- **Clang**: `clang++`
+- **MSVC**: Visual Studio
 
-| 参数 | 说明 |
-|------|------|
-| `-std=c++17` | 使用 C++17 标准（也可用 c++11、c++14、c++20） |
-| `-pthread` | 链接 POSIX 线程库（多线程项目必需） |
-| `-O2` | 优化等级 2（平衡编译时间和性能） |
-| `-O3` | 最高优化等级（更激进优化） |
-| `-Wall` | 显示所有警告 |
-| `-Wextra` | 额外的警告 |
-| `-g` | 生成调试信息（用于 gdb） |
+**C++ 标准：** C++17 或更高
 
 ---
 
-## 📊 知识图谱
+## 📊 学习统计
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                   C++ 进阶编程学习路径                       │
-└─────────────────────────────────────────────────────────────┘
-                              │
-        ┌─────────────────────┼─────────────────────┐
-        ▼                     ▼                     ▼
-   01_fundamentals      02_smart_pointers     03_memory_management
-   基础数据结构            智能指针              内存管理
-        │                     │                     │
-   ┌────┴────┐           ┌────┴────┐           ┌────┴────┐
-   │ 链表    │           │ unique │           │ 内存布局│
-   │ 二叉树  │           │ shared │           │ 内存池  │
-   │ 哈希表  │           │ weak   │           │ 分配器  │
-   └─────────┘           └─────────┘           └─────────┘
-        │                     │                     │
-        └─────────────────────┼─────────────────────┘
-                              │
-                    ┌─────────┼─────────┐
-                    ▼         ▼         ▼
-         04_template_  05_string_  06_multi_
-         metaprogramming  processing  threading
-              │              │              │
-        ┌─────┴─────┐  ┌────┴────┐  ┌─────┴─────┐
-        │ 完美转发  │  │ 查找替换 │  │ 线程同步  │
-        │ SFINAE   │  │ 正则表达式│  │ 线程池   │
-        │ 类型萃取  │  │ string_view│ │ 异步编程  │
-        └───────────┘  └─────────┘  └───────────┘
-```
+| 模块 | 文件数 | 推荐时长 | 难度 |
+|------|--------|----------|------|
+| 01_fundamentals | 7 | 8-12h | ⭐⭐ |
+| 02_smart_pointers | 2 | 3-5h | ⭐⭐ |
+| 03_memory_management | 5 | 4-6h | ⭐⭐⭐ |
+| 04_template_metaprogramming | 3 | 4-6h | ⭐⭐⭐ |
+| 05_string_processing | 1 | 2-3h | ⭐ |
+| 06_multithreading | 12 | 8-12h | ⭐⭐⭐⭐ |
+| 07_algorithms | 4 | 6-8h | ⭐⭐⭐ |
+| 08_advanced_cpp | 3 | 4-6h | ⭐⭐⭐⭐ |
+| 09_design_patterns | 12 | 12-16h | ⭐⭐⭐⭐ |
+
+**总学习时间：** 约 51-74 小时
+
+---
+
+## ✅ 学习检查清单
+
+完成本项目学习后，你应该能够：
+
+- [ ] 熟练实现常用数据结构（链表、树、哈希表等）
+- [ ] 正确使用智能指针管理资源
+- [ ] 理解并应用内存管理技术
+- [ ] 编写泛型和模板代码
+- [ ] 熟练处理字符串操作
+- [ ] 掌握多线程编程和线程同步
+- [ ] 实现常用算法
+- [ ] 理解移动语义和完美转发
+- [ ] 应用设计模式解决实际问题
 
 ---
 
 ## 💡 学习建议
 
-### 学习方法
-1. **循序渐进**：严格按照模块顺序学习，不要跳跃
-2. **动手实践**：每个文件都亲自编译运行，修改参数观察结果
-3. **画图理解**：数据结构和算法最好画图辅助理解
-4. **对比学习**：对比不同实现的性能差异
-5. **应用实践**：将学到的技术应用到实际项目中
-
-### 实践练习
-1. 运行示例，观察输出结果
-2. 使用调试器（gdb/lldb）跟踪执行流程
-3. 编写单元测试验证功能
-4. 尝试改进现有实现
-5. 设计新场景应用所学技术
-
-### 进阶方向
-- **游戏开发**：对象池、Arena 分配器、线程池（模块 3、6、9）
-- **服务器开发**：内存池、线程安全队列、高并发处理（模块 3、6、10）
-- **系统编程**：内存布局、自定义分配器、底层优化（模块 3、8、11）
-- **库开发**：模板编程、完美转发、泛型设计（模块 4、8、12）
-- **算法工程师**：数据结构、算法、性能优化（模块 1、7、11）
-- **全栈开发**：实战项目、设计模式、测试（模块 9、10、12）
+1. **循序渐进**：按顺序学习，不要跳过基础模块
+2. **动手实践**：每个示例都要亲自编译运行
+3. **理解原理**：不仅要会写代码，还要理解背后的原理
+4. **代码重构**：尝试用不同方式实现相同功能
+5. **举一反三**：学习一个知识点后，思考应用场景
 
 ---
 
-## 📚 推荐资源
+## 📖 参考资料
 
-### 书籍
-- 《C++ Primer》第 5 版 - 入门到精通
-- 《Effective Modern C++》- Scott Meyers（现代 C++ 最佳实践）
-- 《C++ Templates: The Complete Guide》- 模板编程权威指南
-- 《C++ Concurrency in Action》- Anthony Williams（多线程编程）
-- 《Game Engine Architecture》- Jason Gregory（游戏开发中的内存管理）
-
-### 在线资源
-- [cppreference.com](https://en.cppreference.com) - C++ 官方参考文档
-- [Compiler Explorer](https://godbolt.org) - 在线编译器探索
-- [Modern C++ Tutorial](https://github.com/changkun/modern-cpp-tutorial) - 现代C++教程
-
-### 工具
-- `gdb` / `lldb` - 调试器
-- `valgrind` - 内存泄漏检测
-- `perf` - 性能分析
-- `clang-tidy` - 代码检查
-- `AddressSanitizer` - 内存错误检测（`-fsanitize=address`）
+- **C++ Primer** - C++ 入门经典
+- **Effective C++** - C++ 最佳实践
+- **Inside the C++ Object Model** - C++ 对象模型
+- **Design Patterns** - 设计模式经典
 
 ---
 
-## 🏗️ 技术要点总结
+## 📝 版本说明
 
-### 内存管理
-- RAII（资源获取即初始化）
-- 智能指针（`unique_ptr`, `shared_ptr`, `weak_ptr`）
-- 内存对齐优化
-- 自定义分配器（Arena、Stack、FreeList、Proxy）
-- 对象池和内存池
-
-### 并发编程
-- 线程安全队列
-- 条件变量与生产者-消费者
-- 原子操作与内存序
-- 线程池设计（基础版、增强版）
-- std::future 和 std::promise（异步编程）
-
-### 模板编程
-- 类型推导规则
-- 完美转发（`std::forward`）
-- 可变参数模板
-- SFINAE 与 `std::enable_if`
-- C++20 Concepts
-
-### 性能优化
-- 移动语义
-- 内存池与对象池
-- 缓存友好设计
-- string_view（零拷贝）
-- 编译期计算
-
----
-
-## 🎓 适用场景
-
-本项目的学习成果适用于以下场景：
-
-- 📚 **学习 C++**：系统学习 C++ 高级特性
-- 💼 **求职面试**：准备 C++ 技术面试
-- 🚀 **性能优化**：提升程序性能
-- 🎮 **游戏开发**：学习游戏引擎中的内存管理和并发技术
-- 🖥️ **服务器开发**：高并发、高性能服务器开发
-- 🔧 **系统编程**：理解底层原理和优化技巧
-- 📦 **库开发**：编写通用的、高效的 C++ 库
-
----
-
-## 📝 许可证
-
-本项目为学习项目，代码仅供学习参考。
+- **C++ 标准**: C++17
+- **编译器**: GCC 7.0+ / Clang 5.0+ / MSVC 2017+
+- **平台**: Windows / Linux / macOS
 
 ---
 
 ## 🙏 总结
 
-完成这 12 个模块的学习后，你将掌握：
+完成这 9 个模块的学习后，你将掌握：
+
 - ✅ 基础数据结构的实现和应用
 - ✅ 现代智能指针的使用
 - ✅ 高级内存管理技术
@@ -494,8 +304,9 @@ g++ -std=c++17 -O2 -Wall filename.cpp -o output && ./output
 - ✅ 常用算法的原理和实现
 - ✅ 现代 C++ 高级特性
 - ✅ 常用设计模式
-- ✅ 实战项目开发能力
-- ✅ 性能优化技术
-- ✅ 测试驱动开发
 
 这些技能将让你成为更出色的 C++ 工程师。祝你学习愉快！
+
+---
+
+**Happy Coding! 🚀**
