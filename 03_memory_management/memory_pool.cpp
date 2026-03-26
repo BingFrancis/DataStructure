@@ -9,13 +9,14 @@
 
 #include <iostream>
 #include <vector>
-#include <stack>
+#include <unordered_map>
 #include <mutex>
 #include <memory>
 #include <chrono>
+#include <cstring>
 
 // ==================== 简单内存池实现 =================///
-template <typename T, size_t BlockSize = 1024>
+template <typename T, size_t BlockSize = 256>
 class SimpleMemoryPool {
 private:
     struct Block {
@@ -23,19 +24,23 @@ private:
         alignas(T) char data[sizeof(T)];
     };
 
-    std::stack<Block*> free_blocks;
-    std::vector<std::unique_ptr<Block[]>> chunks;
+    std::vector<Block*> free_blocks;
+    std::vector<Block*> chunks;  // 改用原始指针管理
+    std::unordered_map<T*, Block*> ptr_to_block;  // 指针映射
     std::mutex mutex;
     size_t allocated_count = 0;
     size_t reused_count = 0;
 
     void allocateNewChunk() {
-        auto chunk = std::make_unique<Block[]>(BlockSize);
-        for (size_t i = 0; i < BlockSize; ++i) {
-            chunk[i].next = (i < BlockSize - 1) ? &chunk[i + 1] : nullptr;
-            free_blocks.push(&chunk[i]);
+        Block* chunk = new Block[BlockSize];
+        for (size_t i = 0; i < BlockSize - 1; ++i) {
+            chunk[i].next = &chunk[i + 1];
         }
-        chunks.push_back(std::move(chunk));
+        chunk[BlockSize - 1].next = nullptr;  // 最后一个节点指向 nullptr
+        for (size_t i = 0; i < BlockSize; ++i) {
+            free_blocks.push_back(&chunk[i]);
+        }
+        chunks.push_back(chunk);
     }
 
 public:
@@ -43,29 +48,42 @@ public:
         allocateNewChunk();
     }
 
+    ~SimpleMemoryPool() {
+        // 手动释放所有 chunk
+        for (size_t i = 0; i < chunks.size(); ++i) {
+            delete[] chunks[i];
+        }
+    }
+
     // 分配内存
     T* allocate() {
-        std::lock_guard<std::mutex> lock(mutex);
+        // std::lock_guard<std::mutex> lock(mutex);  // 暂时禁用 mutex 调试
 
         if (free_blocks.empty()) {
             allocateNewChunk();
         }
 
-        Block* block = free_blocks.top();
-        free_blocks.pop();
+        Block* block = free_blocks.back();
+        free_blocks.pop_back();
         allocated_count++;
 
-        return reinterpret_cast<T*>(block->data);
+        T* ptr = reinterpret_cast<T*>(block->data);
+        ptr_to_block[ptr] = block;  // 保存映射关系
+        return ptr;
     }
 
     // 释放内存
     void deallocate(T* ptr) {
-        std::lock_guard<std::mutex> lock(mutex);
+        // std::lock_guard<std::mutex> lock(mutex);  // 暂时禁用 mutex 调试
 
-        Block* block = reinterpret_cast<Block*>(ptr);
-        block->next = nullptr;
-        free_blocks.push(block);
-        reused_count++;
+        auto it = ptr_to_block.find(ptr);
+        if (it != ptr_to_block.end()) {
+            Block* block = it->second;
+            block->next = nullptr;
+            free_blocks.push_back(block);
+            ptr_to_block.erase(it);
+            reused_count++;
+        }
     }
 
     // 统计信息
@@ -132,16 +150,15 @@ void benchmarkMemoryPool() {
 
     for (int i = 0; i < iterations; ++i) {
         Particle* p = pool.allocate();
-        new (p) Particle(i, i, i, 1, 1, 1, 100);
+        *p = Particle(i, i, i, 1, 1, 1, 100);
         p->update();
-        p->~Particle();
         pool.deallocate(p);
     }
 
     end = std::chrono::high_resolution_clock::now();
     auto pool_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
     std::cout << "时间: " << pool_time.count() << " 微秒\n";
-
+    
     std::cout << "\n性能提升: "
               << (double)new_delete_time.count() / pool_time.count() << " 倍\n";
 
@@ -155,38 +172,39 @@ class SmallOptimizedString {
 private:
     static const size_t SMALL_BUFFER_SIZE = 16;
 
-    union {
-        char small_buffer[SMALL_BUFFER_SIZE];  // 小字符串使用栈缓冲区
-        char* heap_buffer;                     // 大字符串使用堆内存
-    };
-
+    char data[SMALL_BUFFER_SIZE];  // 小字符串直接使用栈缓冲区
+    char* heap_ptr;                 // 大字符串使用堆内存指针
     size_t length;
-    bool is_small;
+    bool use_heap;
 
 public:
-    SmallOptimizedString(const char* str) {
+    SmallOptimizedString(const char* str) : heap_ptr(nullptr), use_heap(false) {
         length = strlen(str);
 
-        if (length < SMALL_BUFFER_SIZE) {
-            // 小字符串：使用栈缓冲区
-            is_small = true;
-            memcpy(small_buffer, str, length + 1);
-        } else {
+        if (length + 1 > SMALL_BUFFER_SIZE) {
             // 大字符串：使用堆内存
-            is_small = false;
-            heap_buffer = new char[length + 1];
-            memcpy(heap_buffer, str, length + 1);
+            use_heap = true;
+            heap_ptr = new char[length + 1];
+            memcpy(heap_ptr, str, length + 1);
+        } else {
+            // 小字符串：使用栈缓冲区
+            use_heap = false;
+            memcpy(data, str, length + 1);
         }
     }
 
+    // 禁止拷贝，避免浅拷贝问题
+    SmallOptimizedString(const SmallOptimizedString&) = delete;
+    SmallOptimizedString& operator=(const SmallOptimizedString&) = delete;
+
     ~SmallOptimizedString() {
-        if (!is_small) {
-            delete[] heap_buffer;
+        if (use_heap) {
+            delete[] heap_ptr;
         }
     }
 
     const char* c_str() const {
-        return is_small ? small_buffer : heap_buffer;
+        return use_heap ? heap_ptr : data;
     }
 
     size_t size() const { return length; }
@@ -194,8 +212,8 @@ public:
     void print() const {
         std::cout << "String: \"" << c_str() << "\" ("
                   << "length=" << length
-                  << ", is_small=" << (is_small ? "true" : "false")
-                  << ", buffer=" << (is_small ? "stack" : "heap") << ")\n";
+                  << ", is_small=" << (use_heap ? "false" : "true")
+                  << ", buffer=" << (use_heap ? "heap" : "stack") << ")\n";
     }
 };
 
@@ -218,7 +236,6 @@ void demonstrateSOO() {
 // ==================== 内存碎片演示 =================///
 void demonstrateMemoryFragmentation() {
     std::cout << "\n=== 内存碎片演示 ===\n";
-
     std::vector<int*> pointers;
 
     // 分配不同大小的块
@@ -239,7 +256,11 @@ void demonstrateMemoryFragmentation() {
     }
 
     std::cout << "已分配的块: " << pointers.size() << "\n";
-    std::cout << "已释放的块: " << std::count(pointers.begin(), pointers.end(), nullptr) << "\n";
+    int freed_count = 0;
+    for (auto p : pointers) {
+        if (p == nullptr) freed_count++;
+    }
+    std::cout << "已释放的块: " << freed_count << "\n";
 
     std::cout << "\n问题：\n";
     std::cout << "1. 频繁分配不同大小的块导致内存碎片\n";

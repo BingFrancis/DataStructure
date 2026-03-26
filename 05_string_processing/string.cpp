@@ -1,6 +1,5 @@
 #include <iostream>
 #include <cstring>
-
 class MyString {
 private:
     char* data;
