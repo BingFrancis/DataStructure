@@ -1,18 +1,19 @@
 # 05_string_processing - 字符串处理
 
-本模块学习 C++ 字符串处理技术和常见操作。
+本模块学习 C++ 标准库字符串处理技术，包括 std::string 操作、string_view 和正则表达式。
 
 ## 📁 文件列表
 
 | 文件 | 描述 | 难度 |
 |------|------|------|
-| `string.cpp` | std::string 常用操作和处理技巧 | ⭐⭐ |
+| `string_operations.cpp` | std::string 实战（查找/替换/分割/正则/string_view） | ⭐⭐ |
 
 ## 🎯 学习目标
 
-- 熟练使用 std::string
-- 掌握字符串分割、拼接、查找
-- 了解正则表达式基础应用
+- 熟练使用 std::string 的所有常用操作
+- 掌握字符串分割、拼接、查找、替换
+- 理解 string_view 的使用场景（零拷贝）
+- 学会正则表达式基础应用
 
 ## 📖 核心概念
 
@@ -39,7 +40,6 @@ to_string(3.14);          // 数值 -> string
 ### 字符串分割
 
 ```cpp
-// 按分隔符分割
 vector<string> split(const string& s, char delim) {
     vector<string> result;
     stringstream ss(s);
@@ -51,23 +51,35 @@ vector<string> split(const string& s, char delim) {
 }
 ```
 
-### 字符串视图 (C++17)
+### string_view (C++17) - 零拷贝
 
 ```cpp
-// string_view：零拷贝的字符串引用
-void print(string_view sv) {
-    cout << sv << endl;
+void process(string_view sv) {
+    // 不拷贝，直接引用原字符串
+    cout << sv.substr(0, 5) << endl;
 }
 
-string s = "hello";
-print(s);            // 从 string 构造
-print("world");      // 从字符串字面量构造
+string s = "hello world";
+process(s);            // 从 string
+process("literal");    // 从字面量
+```
+
+### 正则表达式
+
+```cpp
+regex emailPattern(R"((\w+)(\.\w+)*@(\w+\.\w+))");
+string text = "Contact: support@example.com";
+
+smatch match;
+if (regex_search(text, match, emailPattern)) {
+    cout << match[0] << endl;  // 完整匹配
+}
 ```
 
 ## 🛠️ 编译运行
 
 ```bash
-g++ -std=c++17 string.cpp -o string && ./string
+g++ -std=c++17 string_operations.cpp -o string_ops && ./string_ops
 ```
 
 ## ✅ 学习检查清单
@@ -76,11 +88,13 @@ g++ -std=c++17 string.cpp -o string && ./string
 - [ ] 能实现字符串分割和拼接
 - [ ] 了解 string_view 的使用场景
 - [ ] 掌握字符串和数值类型的转换
+- [ ] 能使用正则表达式进行模式匹配
 
 ## 🔗 相关模块
 
-- `04_template_metaprogramming` - 泛型字符串处理
-- `07_algorithms` - 字符串相关算法
+- `04_template_metaprogramming` — 泛型字符串处理
+- `07_algorithms` — 字符串匹配算法
+- `08_advanced_cpp` — Rule of 5 中 MyString 的移动语义实战
 
 ---
 
