@@ -101,11 +101,11 @@ public:
 };
 
 // ========================================
-// 方法4：使用智能指针
+// 方法4：使用智能指针（修复版）
 // ========================================
 class SingletonSmartPtr {
 private:
-    static unique_ptr<SingletonSmartPtr> instance;
+    static shared_ptr<SingletonSmartPtr> instance;
     static once_flag initFlag;
 
     SingletonSmartPtr() {
@@ -116,11 +116,11 @@ public:
     SingletonSmartPtr(const SingletonSmartPtr&) = delete;
     SingletonSmartPtr& operator=(const SingletonSmartPtr&) = delete;
 
-    static SingletonSmartPtr& getInstance() {
+    static shared_ptr<SingletonSmartPtr> getInstance() {
         call_once(initFlag, []() {
             instance.reset(new SingletonSmartPtr());
         });
-        return *instance;
+        return instance;
     }
 
     void doSomething() {
@@ -128,7 +128,7 @@ public:
     }
 };
 
-unique_ptr<SingletonSmartPtr> SingletonSmartPtr::instance;
+shared_ptr<SingletonSmartPtr> SingletonSmartPtr::instance;
 once_flag SingletonSmartPtr::initFlag;
 
 // ========================================
@@ -240,12 +240,13 @@ int main() {
     meyers1.doSomething();
     cout << endl;
 
+    
     cout << "=== 4. 智能指针单例 ===" << endl;
-    SingletonSmartPtr& smart1 = SingletonSmartPtr::getInstance();
-    SingletonSmartPtr& smart2 = SingletonSmartPtr::getInstance();
-    cout << "smart1 == smart2: " << (&smart1 == &smart2) << endl;
-    smart1.doSomething();
-    cout << endl;
+    auto smart1 = SingletonSmartPtr::getInstance();
+    auto smart2 = SingletonSmartPtr::getInstance();
+    cout << "smart1 == smart2: " << (smart1 == smart2) << endl;
+    smart1->doSomething();
+
 
     cout << "=== 5. 模板单例 ===" << endl;
     MyManager& mgr1 = MyManager::getInstance();

@@ -1,0 +1,33 @@
+# 编译产物
+*.exe
+*.o
+*.obj
+*.out
+*.a
+*.so
+*.dylib
+
+# 各模块编译产物（无扩展名可执行文件）
+01_fundamentals/binary_tree
+01_fundamentals/inheritance
+01_fundamentals/queue
+02_smart_pointers/smart_pointers
+02_smart_pointers/modern_cpp_project
+03_memory_management/memory_pool
+05_string_processing/string
+06_multithreading/threading_demo
+06_multithreading/thread_guard
+06_multithreading/ttttt
+09_design_patterns/behavioral/state
+09_design_patterns/creational/singleton
+
+# IDE
+.vs/
+.vscode/
+*.swp
+*.swo
+*~
+
+# 系统文件
+.DS_Store
+Thumbs.db

@@ -1,3 +1,10 @@
+// ============================================================================
+// 06 - Multithreading: 安全队列与线程池 (Safe Queue & Thread Pool)
+// ============================================================================
+// 实现一个线程安全的泛型队列，支持多生产者-多消费者模式，
+// 以及一个基于此队列的线程池。
+// ============================================================================
+
 #include <iostream>
 #include <vector>
 #include <queue>
@@ -15,7 +22,6 @@ using namespace std;
 using Task = function<void()>;
 
 mutex cout_mutex;
-mutex cout_mutex1;
 
 template<typename T> 
 class SafeQueue
@@ -25,14 +31,15 @@ private:
     mutable mutex mtx;
     condition_variable cond;
 public:
-    SafeQueue();
+    SafeQueue() = default;
+
     void push(T value) {
         unique_lock<mutex> lock(mtx);
         mqueue.push(move(value));
         cond.notify_one();
     }
 
-    T pop (){
+    T pop() {
         unique_lock<mutex> lock(mtx);
         cond.wait(lock, [this]{ return !mqueue.empty(); });
         T tmp = move(mqueue.front());
@@ -40,13 +47,12 @@ public:
         return tmp;
     }
 
-    bool empty () const {
+    bool empty() const {
         unique_lock<mutex> lock(mtx);
         return mqueue.empty();
     }
 
-
-    bool try_pop (T& value) {
+    bool try_pop(T& value) {
         unique_lock<mutex> lock(mtx);
         if (mqueue.empty()) {
             return false;
@@ -62,12 +68,13 @@ public:
         value = move(mqueue.front());
         mqueue.pop();
     }
-    size_t size () {
+
+    size_t size() {
         unique_lock<mutex> lock(mtx);
         return mqueue.size();
     }
 
-    ~SafeQueue();
+    ~SafeQueue() = default;
 };
 
 
@@ -79,7 +86,7 @@ private:
     condition_variable condition;
     bool stop;
 public:
-    ThreadPool(size_t num_threads = thread::hardware_concurrency()):stop(false) {
+    explicit ThreadPool(size_t num_threads = thread::hardware_concurrency()) : stop(false) {
         for (size_t i = 0; i < num_threads; ++i) {
             workers.emplace_back([this]{
                 while (true) {
@@ -115,11 +122,7 @@ public:
             if (stop) {
                 throw runtime_error("enqueue on stopped ThreadPool");
             }
-            try{
-                tasks.emplace([task](){ (*task)(); });
-            }catch() {
-                throw std::runtime_error("内存分配失败: " + std::string(e.what()));
-            }
+            tasks.emplace([task](){ (*task)(); });
         }
         condition.notify_one();
         return res;
@@ -131,7 +134,7 @@ public:
             stop = true;
         }
         condition.notify_all();
-        for (thread &worker : workers) {
+        for (thread& worker : workers) {
             worker.join();
         }
     }
@@ -141,21 +144,26 @@ void test_thread_pool() {
     cout << "\n====== 测试线程池 ======" << endl;
     ThreadPool pool(4);
     vector<future<int>> results;
-    for (int i = 0; i < 8; ++i){
+    for (int i = 0; i < 8; ++i) {
         results.emplace_back(
             pool.enqueue([i]{
                 {
-                unique_lock<mutex> lock(cout_mutex); 
-                cout << "任务 " << i << "在线程 " << this_thread::get_id() << " 执行" << endl;
+                    unique_lock<mutex> lock(cout_mutex); 
+                    cout << "任务 " << i << " 在线程 " << this_thread::get_id() << " 执行" << endl;
                 }
                 this_thread::sleep_for(chrono::milliseconds(100));
                 return i * i; 
             })
         );
     }
+
+    // 获取并输出结果
+    for (size_t i = 0; i < results.size(); ++i) {
+        cout << "任务 " << i << " 结果: " << results[i].get() << endl;
+    }
 }
 
-int	main(int argc, char **argv)
+int main(int argc, char** argv)
 {
     test_thread_pool();
     return 0;

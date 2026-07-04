@@ -1,16 +1,24 @@
-#include<iostream>
-#include<thread>
-#include<vector>
-#include<mutex>
-#include<queue>
-#include<functional>
-#include<chrono>
-#include<atomic>
-#include<condition_variable>
-#include<future>
-class SmartThreadPool{
+// ============================================================================
+// 06 - Multithreading: 智能线程池 (Smart Thread Pool)
+// ============================================================================
+// 支持任务提交、future 返回值、RAII 线程管理的线程池实现。
+// 使用 RAIIThread 包装器自动管理线程生命周期。
+// ============================================================================
+
+#include <iostream>
+#include <thread>
+#include <vector>
+#include <mutex>
+#include <queue>
+#include <functional>
+#include <chrono>
+#include <atomic>
+#include <condition_variable>
+#include <future>
+
+class SmartThreadPool {
 private:
-    // 自定义RAII线程包装器
+    // 自定义 RAII 线程包装器
     struct RAIIThread {
         std::thread thread;
         
@@ -33,24 +41,24 @@ private:
         RAIIThread& operator=(RAIIThread&&) = default;
     };
 
-    //工作线程使用RAII包装器管理
+    // 工作线程使用 RAII 包装器管理
     std::vector<RAIIThread> workers;
 
-    //任务队列和相关同步工具
+    // 任务队列和相关同步工具
     std::queue<std::function<void()>> tasks;
     std::mutex queue_mutex;
     std::mutex output_mutex; // 输出同步锁
     std::condition_variable condition;
 
-    //线程池状态控制
+    // 线程池状态控制
     std::atomic<bool> stop{false};
     std::atomic<int> active_tasks{0};
 
 public:
     // 构造函数：创建指定数量的工作线程
-explicit SmartThreadPool(size_t num_threads = std::thread::hardware_concurrency()) {
+    explicit SmartThreadPool(size_t num_threads = std::thread::hardware_concurrency()) {
         for (size_t i = 0; i < num_threads; ++i) {
-            // 使用RAIIThread包装器，自动管理线程生命周期
+            // 使用 RAIIThread 包装器，自动管理线程生命周期
             workers.emplace_back([this, i] {
                 worker_loop(i);
             });
@@ -63,7 +71,7 @@ explicit SmartThreadPool(size_t num_threads = std::thread::hardware_concurrency(
     auto enqueue(F&& f, Args&&... args) -> std::future<decltype(f(args...))> {
         using return_type = decltype(f(args...));
         
-        // 使用packaged_task包装任务，支持返回值
+        // 使用 packaged_task 包装任务，支持返回值
         auto task = std::make_shared<std::packaged_task<return_type()>>(
             std::bind(std::forward<F>(f), std::forward<Args>(args)...)
         );
@@ -78,7 +86,7 @@ explicit SmartThreadPool(size_t num_threads = std::thread::hardware_concurrency(
                 throw std::runtime_error("线程池已停止，无法添加新任务");
             }
             
-            // 将任务包装成void()类型并加入队列
+            // 将任务包装成 void() 类型并加入队列
             tasks.emplace([task, this]() {
                 ++active_tasks;
                 try {
@@ -96,7 +104,7 @@ explicit SmartThreadPool(size_t num_threads = std::thread::hardware_concurrency(
         return result;
     }
 
-        // 优雅关闭线程池
+    // 优雅关闭线程池
     void shutdown() {
         {
             std::unique_lock<std::mutex> lock(queue_mutex);
@@ -109,11 +117,10 @@ explicit SmartThreadPool(size_t num_threads = std::thread::hardware_concurrency(
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
         
-        // RAIIThread析构时会自动join所有线程
+        // RAIIThread 析构时会自动 join 所有线程
         workers.clear();
         std::cout << "线程池已关闭" << std::endl;
     }
-
 
     // 析构函数：自动关闭线程池
     ~SmartThreadPool() {
@@ -121,9 +128,6 @@ explicit SmartThreadPool(size_t num_threads = std::thread::hardware_concurrency(
             shutdown();
         }
     }
-
-
-
 
 private:
     void worker_loop(int worker_id) {
@@ -173,8 +177,8 @@ int calculate_square(int x) {
 int main() {
     SmartThreadPool smartthreadpool(4);
 
-    // 测试1：添加带返回值的任务
-    std::cout << "\n1. 测试带返回值的任务..." << std::endl;
+    // 测试：添加带返回值的任务
+    std::cout << "\n测试带返回值的任务..." << std::endl;
     std::vector<std::future<int>> results;
     for (int i = 1; i <= 6; ++i) {
         results.push_back(smartthreadpool.enqueue(calculate_square, i));
@@ -182,7 +186,7 @@ int main() {
     
     // 获取结果
     for (size_t i = 0; i < results.size(); ++i) {
-        std::cout << "任务" << (i+1) << "结果: " << results[i].get() << std::endl;
+        std::cout << "任务" << (i+1) << " 结果: " << results[i].get() << std::endl;
     }
     return 0;
 }

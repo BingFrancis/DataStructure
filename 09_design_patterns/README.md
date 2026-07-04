@@ -84,8 +84,8 @@
 
 ```bash
 # 创建型模式
-g++ -std=c++17 creational/singleton.cpp -o singleton && ./singleton
-g++ -std=c++17 creational/factory_method.cpp -o factory && ./factory
+g++ -std=c++17 -pthread creational/singleton.cpp -o singleton && ./singleton
+g++ -std=c++17 -pthread creational/factory_method.cpp -o factory && ./factory
 
 # 结构型模式
 g++ -std=c++17 structural/decorator.cpp -o decorator && ./decorator

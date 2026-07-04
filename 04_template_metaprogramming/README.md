@@ -1,21 +1,23 @@
 # 04_template_metaprogramming - 模板编程
 
-本模块学习 C++ 模板编程，包括函数模板、类模板和模板元编程基础。
+本模块学习 C++ 模板编程，从函数模板到可变参数模板，覆盖泛型编程的核心技术。
 
 ## 📁 文件列表
 
-| 文件 | 描述 | 难度 |
-|------|------|------|
-| `template_fundamentals.cpp` | 模板基础（函数模板、类模板） | ⭐⭐⭐ |
-| `function_templates_advanced.cpp` | 高级函数模板（SFINAE、完美转发） | ⭐⭐⭐⭐ |
-| `template_instantiation.cpp` | 模板实例化与特化 | ⭐⭐⭐⭐ |
+| 文件 | 描述 | 难度 | 学习顺序 |
+|------|------|------|----------|
+| `template_fundamentals.cpp` | 函数模板、类模板、全特化/偏特化、CTAD | ⭐⭐⭐ | ① |
+| `template_instantiation.cpp` | 隐式/显式实例化、成员函数模板 | ⭐⭐⭐⭐ | ② |
+| `function_templates_advanced.cpp` | SFINAE、类型推导、类型萃取 | ⭐⭐⭐⭐ | ③ |
+| `variadic_templates.cpp` | 可变参数模板、折叠表达式、完美转发构造 | ⭐⭐⭐⭐⭐ | ④ |
 
 ## 🎯 学习目标
 
 - 掌握函数模板和类模板
-- 理解模板参数推导
+- 理解模板参数推导与 CTAD (C++17)
 - 学会模板特化和偏特化
-- 了解 SFINAE 和 concepts
+- 了解 SFINAE 和 type_traits
+- **掌握可变参数模板和折叠表达式**
 
 ## 📖 核心概念
 
@@ -71,7 +73,7 @@ struct TypeInfo {
     static string name() { return "unknown"; }
 };
 
-// 特化版本
+// 全特化版本
 template<>
 struct TypeInfo<int> {
     static string name() { return "int"; }
@@ -100,12 +102,29 @@ process(T val) {
 }
 ```
 
+### 5. 可变参数模板 + 折叠表达式 (C++17)
+
+```cpp
+// 折叠表达式：求和
+template<typename... Args>
+auto sum(Args... args) {
+    return (args + ... + 0);  // 右折叠
+}
+
+// 折叠表达式：打印
+template<typename... Args>
+void print(Args... args) {
+    (cout << ... << args) << endl;  // 二元左折叠
+}
+```
+
 ## 🛠️ 编译运行
 
 ```bash
-g++ -std=c++17 template_fundamentals.cpp -o template_fundamentals && ./template_fundamentals
-g++ -std=c++17 function_templates_advanced.cpp -o function_templates_advanced && ./function_templates_advanced
-g++ -std=c++17 template_instantiation.cpp -o template_instantiation && ./template_instantiation
+g++ -std=c++17 template_fundamentals.cpp -o tf && ./tf
+g++ -std=c++17 template_instantiation.cpp -o ti && ./ti
+g++ -std=c++17 function_templates_advanced.cpp -o fta && ./fta
+g++ -std=c++17 variadic_templates.cpp -o vt && ./vt
 ```
 
 ## ✅ 学习检查清单
@@ -115,12 +134,14 @@ g++ -std=c++17 template_instantiation.cpp -o template_instantiation && ./templat
 - [ ] 掌握模板特化和偏特化
 - [ ] 了解 SFINAE 的原理
 - [ ] 能使用 type_traits
-- [ ] 了解 C++20 Concepts
+- [ ] **能编写可变参数模板**
+- [ ] **理解折叠表达式**
 
 ## 🔗 相关模块
 
-- `05_string_processing` - 模板在字符串处理中的应用
-- `08_advanced_cpp` - 可变参数模板
+- `08_advanced_cpp` — 值类别和完美转发是变参模板的前提
+- `07_algorithms` — 泛型算法大量使用模板
+- `06_multithreading` — 线程池 enqueue 使用变参模板 + 完美转发
 
 ---
 

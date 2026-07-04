@@ -1,26 +1,15 @@
+// ============================================================================
+// 06 - Multithreading: Future/Promise 异步编程
+// ============================================================================
+// 演示 std::future、std::promise、std::packaged_task 的核心用法。
+// ============================================================================
+
 #include <iostream>
 #include <future>
 #include <chrono>
 #include <thread>
 
-
-//移动语义与完美转发
-class StringWrapper {
-private:
-    std::mutex mutex;
-    std::string data;
-
-public:
-    StringWrapper(const std::string &data_) : data(data_) {
-        std::cout << "拷贝构造函数" << std::endl;
-    };
-
-    StringWrapper(StringWrapper && other) noexcept :data(std::move(other.data)){
-        std::cout << "移动构造" << std::endl;
-    };
-};
-
-void promise_future_example () {
+void promise_future_example() {
     std::promise<int> prom;
     std::future<int> fut = prom.get_future();
 
@@ -32,7 +21,7 @@ void promise_future_example () {
     try
     {
         int result = fut.get();
-        std::cout << "Received: " << result << std::endl;
+        std::cout << "promise_future received: " << result << std::endl;
     }
     catch(const std::exception& e)
     {
@@ -42,8 +31,8 @@ void promise_future_example () {
     worker.join();
 }
 
-void packaged_task_example () {
-     // 创建packaged_task
+void packaged_task_example() {
+     // 创建 packaged_task
      std::packaged_task<int(int, int)> task([](int a, int b) {
         return a + b;
      });
@@ -52,15 +41,14 @@ void packaged_task_example () {
 
      std::thread task_thread(std::move(task), 10, 20);
 
-     std::cout << "packaged_task get data :" << fut.get() << std::endl;
+     std::cout << "packaged_task result: " << fut.get() << std::endl;
 
      task_thread.join();
 }
 
 
-
 int main() {
-    // promise_future_example();
+    promise_future_example();
     packaged_task_example();
     return 0;
 }

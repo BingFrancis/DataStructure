@@ -9,13 +9,15 @@
 | `threading_demo.cpp` | 线程基础（创建、等待、分离） | ⭐⭐ |
 | `thread_guard.cpp` | RAII 线程守卫 | ⭐⭐⭐ |
 | `multithreading.cpp` | 多线程综合示例 | ⭐⭐⭐ |
+| `thread_test.cpp` | 生产者-消费者模型 | ⭐⭐⭐ |
 | `safe_queue.cpp` | 线程安全队列 | ⭐⭐⭐⭐ |
-| `My_Safe_Queue.cpp` | 自定义安全队列实现 | ⭐⭐⭐⭐ |
+| `my_safe_queue.cpp` | 安全队列 + 线程池实现 | ⭐⭐⭐⭐ |
 | `task_queue.cpp` | 任务队列 | ⭐⭐⭐⭐ |
 | `future.cpp` | Future/Promise 异步编程 | ⭐⭐⭐⭐ |
-| `smartThreadPool.cpp` | 智能线程池 | ⭐⭐⭐⭐ |
-| `enhanced_thread_pool.cpp` | 增强线程池 | ⭐⭐⭐⭐ |
+| `smart_thread_pool.cpp` | 智能线程池（RAII） | ⭐⭐⭐⭐ |
+| `enhanced_thread_pool.cpp` | 增强线程池 | ⭐⭐⭐⭐⭐ |
 | `smart_ptr_threading.cpp` | 智能指针与多线程 | ⭐⭐⭐⭐ |
+| `smart_ptr_thread_pool_demo.cpp` | 智能指针线程池演示 | ⭐⭐⭐⭐ |
 
 ## 🎯 学习目标
 
@@ -115,16 +117,17 @@ lock_guard<mutex> lk2(mtx2, adopt_lock);
 ```bash
 g++ -std=c++17 safe_queue.cpp -o sq -pthread && ./sq
 g++ -std=c++17 future.cpp -o future -pthread && ./future
-g++ -std=c++17 smartThreadPool.cpp -o pool -pthread && ./pool
+g++ -std=c++17 smart_thread_pool.cpp -o pool -pthread && ./pool
 ```
 
 ## 📖 学习建议顺序
 
 1. `threading_demo.cpp` - 线程基础
 2. `thread_guard.cpp` - RAII 管理
-3. `safe_queue.cpp` - 线程安全队列
-4. `future.cpp` - 异步编程
-5. `smartThreadPool.cpp` - 线程池实现
+3. `thread_test.cpp` - 生产者-消费者
+4. `safe_queue.cpp` - 线程安全队列
+5. `future.cpp` - 异步编程
+6. `smart_thread_pool.cpp` - 线程池实现
 
 ## ✅ 学习检查清单
 

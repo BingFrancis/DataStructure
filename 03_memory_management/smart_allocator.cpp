@@ -26,7 +26,7 @@
 class ArenaAllocator {
 private:
     char* buffer;
-      capacity;
+    size_t capacity;
     size_t offset;
 
 public:
