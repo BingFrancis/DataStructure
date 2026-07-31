@@ -31,7 +31,7 @@ private:
             if (data[index] <= data[parent]) {
                 break;
             }
-            swap(data[index], data[parent]);
+            swa p(data[index], data[parent]);
             index = parent;
         }
     }
