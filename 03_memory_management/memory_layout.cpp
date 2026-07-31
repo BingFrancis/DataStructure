@@ -37,7 +37,7 @@ const char* string_literal = "Hello World";
 // 特点：只读，存储程序指令
 
 void demonstrateMemoryLayout() {
-    std::cout << "=== C++ 程序内存布局演示 ===\n\n";
+    std::cout << "=== C++ 程序内存布局演示 ===\n\n"; 
 
     // ==================== 栈区 ====================
     // 存储位置：栈
@@ -206,41 +206,97 @@ void benchmarkMemoryAllocation() {
 }
 
 // ==================== 缓存友好设计演示 =================///
+// void demonstrateCacheFriendlyDesign() {
+//     std::cout << "\n=== 缓存友好设计演示 ===\n";
+
+//     const int size = 10000;
+
+//     // 二维数组
+//     int array[size][size];
+
+//     std::cout << "数组访问顺序对性能的影响：\n";
+
+//     // 顺序访问（缓存友好）
+//     auto start = std::chrono::high_resolution_clock::now();
+//     long sum = 0;
+//     for (int i = 0; i < size; ++i) {
+//         for (int j = 0; j < size; ++j) {
+//             sum += array[i][j];  // 连续内存访问
+//         }
+//     }
+//     auto end = std::chrono::high_resolution_clock::now();
+//     auto sequential_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+//     std::cout << "顺序访问时间: " << sequential_time.count() << " 毫秒\n";
+
+//     // 跨步访问（缓存不友好）
+//     start = std::chrono::high_resolution_clock::now();
+//     sum = 0;
+//     for (int i = 0; i < size; ++i) {
+//         for (int j = 0; j < size; ++j) {
+//             sum += array[j][i];  // 跨越缓存行访问
+//         }
+//     }
+//     end = std::chrono::high_resolution_clock::now();
+//     auto strided_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+//     std::cout << "跨步访问时间: " << strided_time.count() << " 毫秒\n";
+
+//     std::cout << "\n性能差异: " << (double)strided_time.count() / sequential_time.count() << " 倍\n";
+//     std::cout << "\n原因：\n";
+//     std::cout << "1. CPU缓存按块（缓存行，通常64字节）加载数据\n";
+//     std::cout << "2. 顺序访问可以利用缓存行的预取\n";
+//     std::cout << "3. 跨步访问导致频繁缓存未命中\n";
+//     std::cout << "4. 缓存命中时只需1-3个时钟周期\n";
+//     std::cout << "5. 缓存未命中需要从内存加载（100+个时钟周期）\n";
+// }
+
+
 void demonstrateCacheFriendlyDesign() {
     std::cout << "\n=== 缓存友好设计演示 ===\n";
 
     const int size = 10000;
+    const int total = size * size;
 
-    // 二维数组
-    int array[size][size];
+    // 修复1：堆分配，避免 381MB 栈溢出
+    // 修复2：显式初始化，避免读取未定义内存（UB）
+    std::vector<int> array(total);
+    for (int i = 0; i < total; ++i) array[i] = i;
+
+    // 修复3：volatile 副作用，防止编译器把循环当死代码删了
+    volatile long sink = 0;
 
     std::cout << "数组访问顺序对性能的影响：\n";
 
-    // 顺序访问（缓存友好）
+    // 顺序访问（缓存友好）—— 内存连续
     auto start = std::chrono::high_resolution_clock::now();
     long sum = 0;
     for (int i = 0; i < size; ++i) {
         for (int j = 0; j < size; ++j) {
-            sum += array[i][j];  // 连续内存访问
+            sum += array[i * size + j];
         }
     }
+    sink = sum;  // 强制写出，编译器不敢优化掉循环
     auto end = std::chrono::high_resolution_clock::now();
     auto sequential_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     std::cout << "顺序访问时间: " << sequential_time.count() << " 毫秒\n";
 
-    // 跨步访问（缓存不友好）
+    // 跨步访问（缓存不友好）—— 每次跳 40000 字节
     start = std::chrono::high_resolution_clock::now();
     sum = 0;
     for (int i = 0; i < size; ++i) {
         for (int j = 0; j < size; ++j) {
-            sum += array[j][i];  // 跨越缓存行访问
+            sum += array[j * size + i];
         }
     }
+    sink = sum;
     end = std::chrono::high_resolution_clock::now();
     auto strided_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     std::cout << "跨步访问时间: " << strided_time.count() << " 毫秒\n";
 
-    std::cout << "\n性能差异: " << (double)strided_time.count() / sequential_time.count() << " 倍\n";
+    // 修复4：防止除零
+    long seq_ms = sequential_time.count();
+    if (seq_ms == 0) seq_ms = 1;
+
+    std::cout << "\n性能差异: " << (double)strided_time.count() / seq_ms << " 倍\n";
     std::cout << "\n原因：\n";
     std::cout << "1. CPU缓存按块（缓存行，通常64字节）加载数据\n";
     std::cout << "2. 顺序访问可以利用缓存行的预取\n";

@@ -40,7 +40,7 @@ public:
         }
         data.pop_front();
     }
-
+   
     // 获取队首元素
     T& front() {
         if (isEmpty()) {

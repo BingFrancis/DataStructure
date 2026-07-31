@@ -213,7 +213,7 @@ void stringHashTableDemo() {
         // 更新成绩
         scores.insert("李四", 95);
         scores.get("李四", score) && cout << "李四的新成绩: " << score << endl;
-        
+    
         // 删除学生
         scores.remove("孙八");
         cout << "删除孙八后，当前学生数: " << scores.getSize() << endl;
@@ -221,7 +221,6 @@ void stringHashTableDemo() {
         cout << "字符串哈希表演示出错: " << e.what() << endl;
     }
 }
-
 // 高级操作演示
 void advancedHashTableDemo() {
     cout << "\n=== 哈希表高级操作演示 ===" << endl;
